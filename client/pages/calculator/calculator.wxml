@@ -1,0 +1,37 @@
+<template name='detailItem'>
+  <view>
+    <text class='cal-detail-col cal-detail-col-0'>{{index + 1}}月</text>
+    <text class='cal-detail-col cal-detail-col-1'>{{taxPaid}}</text>
+    <text class='cal-detail-col cal-detail-col-2'>{{moneyGet}}</text>
+  </view>
+</template>
+<view class='cal-container'>
+  <form bindsubmit='quickFormSubmit' bindreset='quickFormReset'>
+    <input name='salary' type='number' placeholder='税前工资(月薪)' />
+    <input name='specialDeduction' type='number' placeholder='专项扣除(每月)' />
+    <input name='insuranceDeduction' type='number' placeholder='三险一金个人扣除(每月)' />
+    <input name='bonus' type='number' placeholder='年终奖' />
+    <picker name='bonusMonth' bindchange='bindBonusMonthChange' value='{{bonusMonth}}' range='{{months}}'>
+      <view>{{months[bonusMonth]}}发年终奖</view>
+    </picker>
+    <button form-type='submit'>快速预览新税法工资</button>
+    <button form-type='reset'>重置</button>
+  </form>
+  <view wx:if='{{detail && detail.length > 0}}' class='cal-detail'>
+    <view class='cal-detail-table'>
+      <view class='cal-detail-header'>
+        <text class='cal-detail-col cal-detail-col-0' />
+        <text class='cal-detail-col cal-detail-col-1'>个人所得税</text>
+        <text class='cal-detail-col cal-detail-col-2'>税后到手</text>
+      </view>
+      <block wx:for='{{detail}}' wx:key='{{index}}'>
+        <template is='detailItem' data='{{...item}}' />
+      </block>
+      <view class='cal-detail-total'>
+        <text class='cal-detail-col cal-detail-col-0'>全年</text>
+        <text class='cal-detail-col cal-detail-col-1'>{{taxTotal}}</text>
+        <text class='cal-detail-col cal-detail-col-2'>{{moneyGetTotal}}</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,29 @@
+page {
+  background-color: #f7f8fa;
+}
+.cal-container {
+  margin: 10px;
+}
+.cal-detail {
+  width: 100%;
+  padding: 18px;
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 2;
+  background-color: #fff;
+  box-sizing: border-box;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.17);
+  border-radius: 5px;
+}
+.cal-detail-table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+.cal-detail-table > view {
+  display: table-row;
+  border-bottom: 1px solid #d0d0d0;
+}
+.cal-detail-col {
+  display: table-cell;
+}
