@@ -67,8 +67,8 @@ function calc({salary, bonus, bonusMonth, specialDeduction, insuranceDeduction})
     return sum + item
   })
   console.log('全年到手：' + moneyGetTotal)
-  const { tax, moneyGet } = calcTotal(salary, bonus, bonusMonth, specialDeduction, insuranceDeduction)
   console.log('再算一遍:')
+  const { tax, moneyGet } = calcTotal(salary, bonus, bonusMonth, specialDeduction, insuranceDeduction)
   console.log('全年税额：' + tax)
   console.log('全年到手：' + moneyGet)
   return {
@@ -93,7 +93,9 @@ function calcTotal (salary, bonus, bonusMonth, specialDeduction, insuranceDeduct
 function getTaxRateAndQuickDeduction (amount) {
   let taxRate = 0
   let quickDeduction = 0
-  if (amount <= 36000) {
+  if (amount <= 0) {
+    taxRate = 0
+  } else if (amount <= 36000) {
     taxRate = 3
   } else if (amount <= 144000) {
     taxRate = 10

@@ -7,15 +7,34 @@
 </template>
 <view class='cal-container'>
   <form bindsubmit='quickFormSubmit' bindreset='quickFormReset'>
-    <input name='salary' type='number' placeholder='税前工资(月薪)' />
-    <input name='specialDeduction' type='number' placeholder='专项扣除(每月)' />
-    <input name='insuranceDeduction' type='number' placeholder='三险一金个人扣除(每月)' />
-    <input name='bonus' type='number' placeholder='年终奖' />
-    <picker name='bonusMonth' bindchange='bindBonusMonthChange' value='{{bonusMonth}}' range='{{months}}'>
-      <view>{{months[bonusMonth]}}发年终奖</view>
-    </picker>
-    <button form-type='submit'>快速预览新税法工资</button>
-    <button form-type='reset'>重置</button>
+    <view class='cal-quick-form'>
+      <view>
+        <text>税前工资</text>
+        <input name='salary' type='digit' placeholder='输入每月应发工资' />
+      </view>
+      <view>
+        <text>专项扣除</text>
+        <input name='specialDeduction' type='digit' placeholder='输入每月专项扣除' />
+      </view>
+      <view>
+        <text>三险一金个人扣除</text>
+        <input name='insuranceDeduction' type='digit' placeholder='三险一金个人扣除(每月)' />
+      </view>
+      <view>
+        <text>年终奖</text>
+        <input name='bonus' type='digit' placeholder='年终奖' />
+      </view>
+      <view>
+        <text>年终奖发放月份</text>
+        <picker name='bonusMonth' bindchange='bindBonusMonthChange' value='{{bonusMonth}}' range='{{months}}'>
+          <view>{{months[bonusMonth]}}</view>
+        </picker>
+      </view>
+    </view>
+    <view class='cal-quick-form-buttons'>
+      <button form-type='submit' type='primary'>计算一下</button>
+      <button form-type='reset'>重置</button>
+    </view>
   </form>
   <view wx:if='{{detail && detail.length > 0}}' class='cal-detail'>
     <view class='cal-detail-table'>

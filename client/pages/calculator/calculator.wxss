@@ -2,18 +2,29 @@ page {
   background-color: #f7f8fa;
 }
 .cal-container {
-  margin: 10px;
+  margin: 20rpx;
+}
+.cal-quick-form {
+  display: table;
+  font-size:32rpx;
+  width:100%;
+}
+.cal-quick-form > view {
+  display: table-row;
+}
+.cal-quick-form > view > text {
+  display: table-cell;
 }
 .cal-detail {
   width: 100%;
-  padding: 18px;
-  margin: 10px 0;
-  font-size: 14px;
+  padding:20rpx 40rpx;
+  margin:20rpx 0;
+  font-size: 32rpx;
   line-height: 2;
   background-color: #fff;
   box-sizing: border-box;
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.17);
-  border-radius: 5px;
+  box-shadow: 0 4rpx 6rpx 0 rgba(0, 0, 0, 0.17);
+  border-radius: 10rpx;
 }
 .cal-detail-table {
   display: table;
@@ -22,8 +33,23 @@ page {
 }
 .cal-detail-table > view {
   display: table-row;
-  border-bottom: 1px solid #d0d0d0;
+  border-bottom: 1rpx solid #d0d0d0;
+}
+.cal-detail-header, .cal-detail-total {
+  background-color: #f1f1f1;
 }
 .cal-detail-col {
   display: table-cell;
+}
+.cal-quick-form-buttons {
+  margin-top: 30rpx;
+}
+.cal-quick-form-buttons button {
+  display: inline-block;
+  font-size: 34rpx;
+  width: calc(50% - 10rpx);
+  box-sizing: border-box;
+}
+.cal-quick-form-buttons button:first-child {
+  margin-right: 14rpx;
 }
