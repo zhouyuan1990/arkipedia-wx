@@ -9,6 +9,10 @@ input[disabled] {
   border-bottom: 1px dashed #999!important;
   box-shadow: none!important;
 }
+picker {
+  border-bottom: 1px solid #1AAD19;
+  box-shadow: 0 1px 0 0 #1AAD19;
+}
 .cal-quick-form {
   font-size:32rpx;
   width:100%;
@@ -50,26 +54,24 @@ input[disabled] {
   display: block;
   color: #999;
 }
-.cal-quick-form__field-content {
-  line-height: 2;
-  font-size: 36rpx;
-}
 .cal-quick-form__field-content > input {
-  max-width:50%;
-  margin-right:30rpx;
+  max-width: 50%;
+  margin-right: 30rpx;
 }
-.cal-quick-form__field-content > text,
-.cal-quick-form__field-content > input,
-.cal-quick-form__field-content > checkbox-group,
-.cal-quick-form__field-content > picker {
+.cal-quick-form__field-value {
   display: inline-block;
   vertical-align: middle;
+  font-size: 36rpx;
+  line-height: 2;
+  height: 72rpx;
+  box-sizing: border-box;
 }
-.cal-quick-form__bonus-amount {
+.cal-quick-form__bonus-amount, .cal-quick-form__salary {
   width: 50%;
   margin-right: 30rpx;
 }
-.cal-quick-form__bonus > view {
+.cal-quick-form__bonus > view,
+.cal-quick-form__main > view {
   display: inline-block;
   vertical-align: top;
 }
@@ -84,9 +86,9 @@ input[disabled] {
 .cal-quick-form__buttons button {
   display: inline-block;
   font-size: 34rpx;
-  width: calc(50% - 10rpx);
   box-sizing: border-box;
 }
 .cal-quick-form__buttons button:first-child {
-  margin-right: 14rpx;
+  margin-right: 20rpx;
+  width: 50%;
 }

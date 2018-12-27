@@ -1,5 +1,4 @@
-module.exports = [
-  {
+module.exports = [{
     key: 'shanghai',
     chinese: '上海市',
     data: {

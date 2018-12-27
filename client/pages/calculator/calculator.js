@@ -6,11 +6,13 @@ const months = Array(12).fill(null).map((item, index) => {
   return (index + 1) + '月'
 })
 const qqMapKey = 'F66BZ-FPXKO-5Y7WN-SIZBY-APOP6-QKB6P'
-
+const otherCity = { chinese: '其他城市', key: 'other'}
 Page({
   data: {
-    cityData: null,
-    cityName: '',
+    cityList: cityData.map(item => { return { chinese: item.chinese } }).concat(otherCity),
+    cityItem: null,
+    cityIndex: -1,
+    cityKey: otherCity.key,
     salary: 0,
     sbBase: 0,
     gjjBase: 0,
@@ -20,6 +22,8 @@ Page({
     },
     bonusMonth: 0,
     months: months,
+    timeTypes: ['2022年1月1日以前', '2022年1月1日起'],
+    timeType: 0,
     detail: [],
     taxTotal: 0,
     moneyGetTotal: 0
@@ -53,13 +57,8 @@ Page({
           success: res => {
             console.log(res);
             const cityChinese = res.result.ad_info.city
-            const cityItem = cityData.find(item => item.chinese === cityChinese) || cityData[0]
-            const { sbBase, gjjBase } = getBase(0, cityItem.data.base)
-            this.setData({
-              cityData: cityItem,
-              sbBase: sbBase,
-              gjjBase: gjjBase
-            })
+            const cityIndex = cityData.findIndex(item => item.chinese === cityChinese)
+            this.changeAfterCityChange(cityIndex)
           },
           fail: res => {
             console.log(res);
@@ -71,13 +70,23 @@ Page({
       }
     })
   },
+  changeAfterCityChange: function (index) {
+    const cityItem = cityData[index] || null
+    const { sbBase, gjjBase } = cityItem ? getBase(this.data.salary, cityItem.data.base) : { sbBase: 0, gjjBase: 0}
+    this.setData({
+      cityIndex: index,
+      cityItem: cityItem,
+      sbBase: sbBase,
+      gjjBase: gjjBase
+    })
+  },
   onQuickSalaryInput: function (e) {
     const salary = Number(e.detail.value)
     let updates = {
       salary: salary
     }
-    const { customBase, cityData } = this.data
-    const { gjjBase, sbBase } = getBase(salary, cityData.data.base)
+    const { customBase, cityItem } = this.data
+    const { gjjBase, sbBase } = getBase(salary, cityItem.data.base)
     if (!customBase.gjj) {
       updates.gjjBase = gjjBase
     }
@@ -96,8 +105,8 @@ Page({
       }
     }
     if (!flag) {
-      const { salary, cityData } = this.data
-      const base = getBase(salary, cityData.data.base)
+      const { salary, cityItem } = this.data
+      const base = getBase(salary, cityItem.data.base)
       const baseKey = `${type}Base`
       updates[baseKey] = base[baseKey]
     }
@@ -108,19 +117,30 @@ Page({
       bonusMonth: Number(e.detail.value)
     })
   },
+  onCityChange: function (e) {
+    const index = Number(e.detail.value)
+    this.changeAfterCityChange(index)
+  },
+  onTimeChange: function (e) {
+    this.setData({
+      timeType: Number(e.detail.value)
+    })
+  },
   quickFormSubmit: function (e) {
     const { salary, bonus, bonusMonth, specialDeduction, sbBase, gjjBase } = e.detail.value
-    const insuranceDeduction = getInsuranceDeduction({
+    const { cityItem, timeType } = this.data
+    const insuranceDeduction = cityItem ? getInsuranceDeduction({
       gjjBase: Number(gjjBase),
       sbBase: Number(sbBase),
-      data: this.data.cityData.data
-    })
+      data: cityItem.data
+    }) : Number(e.detail.value.insuranceDeduction)
     this.setData(calc({
       salary: Number(salary),
       bonus: Number(bonus),
       bonusMonth: Number(bonusMonth),
       specialDeduction: Number(specialDeduction),
-      insuranceDeduction: Number(insuranceDeduction)
+      insuranceDeduction: Number(insuranceDeduction),
+      timeType: timeType
     }))
   },
   quickFormReset: function () {
@@ -145,15 +165,15 @@ function getInsuranceDeduction ({gjjBase, sbBase, data, extraGjj = 0}) {
   return gjjBase * gjjRate + sbBase * sbRate
 }
 
-function calc({salary, bonus, bonusMonth, specialDeduction, insuranceDeduction}) {
+function calc({salary, bonus, bonusMonth, specialDeduction, insuranceDeduction, timeType = 0}) {
   const regular = { salary, specialDeduction, insuranceDeduction }
   let totalSalary = 0
   let totalSpecialDeduction = 0
   let totalInsuranceDeduction = 0
   let totalTaxPaid = 0
   let detail = Array(12).fill(null).map((temp, index) => {
-    let item = {...regular, index: index}
-    if (index === bonusMonth) {
+    let item = {...regular, name: index + 1 + '月'}
+    if (timeType !== 0 && index === bonusMonth) {
       item.bonus = Number(bonus)
     }
     totalSalary += item.salary + (item.bonus || 0)
@@ -170,23 +190,43 @@ function calc({salary, bonus, bonusMonth, specialDeduction, insuranceDeduction})
     item.taxRate = taxRate
     return item
   })
+  let { tax, moneyGet } = calcTotal({salary, bonus, specialDeduction, insuranceDeduction, timeType})
+  if (timeType === 0) {
+    const bonusTaxAndMoneyGet = calcBonus(bonus)
+    detail = detail.concat({
+      name: '年终奖',
+      taxPaid: bonusTaxAndMoneyGet.tax,
+      moneyGet: bonusTaxAndMoneyGet.moneyGet
+    })
+    tax += bonusTaxAndMoneyGet.tax
+    moneyGet += bonusTaxAndMoneyGet.moneyGet
+    console.log({tax, moneyGet})
+  }
   console.log(detail)
-  // const taxTotal = detail.map(item => item.taxPaid).reduce((sum, item) => {
-  //   return sum + item
-  // })
-  // const moneyGetTotal = detail.map(item => item.moneyGet).reduce((sum, item) => {
-  //   return sum + item
-  // })
-  const { tax, moneyGet } = calcTotal({salary, bonus, specialDeduction, insuranceDeduction})
+  const taxTotal = detail.map(item => item.taxPaid).reduce((sum, item) => {
+    return sum + item
+  }).toFixed(2)
+  const moneyGetTotal = detail.map(item => item.moneyGet).reduce((sum, item) => {
+    return sum + item
+  }).toFixed(2)
   return {
     detail,
-    taxTotal: tax,
-    moneyGetTotal: moneyGet
+    taxTotal: taxTotal,
+    moneyGetTotal: moneyGetTotal
   }
 }
 
-function calcTotal ({salary, bonus, specialDeduction, insuranceDeduction}) {
-  const totalSalary = salary * 12 + bonus
+function calcBonus (bonus) {
+  const { taxRate, quickDeduction } = getTaxRateAndQuickDeduction(bonus, true)
+  const tax = +(bonus * taxRate / 100 - quickDeduction).toFixed(2)
+  return {
+    tax: tax,
+    moneyGet: bonus - tax
+  }
+}
+
+function calcTotal ({salary, bonus, specialDeduction, insuranceDeduction, timeType}) {
+  const totalSalary = salary * 12 + (timeType === 0 ? 0 : bonus)
   const totalSpecialDeduction = specialDeduction * 12
   const totalInsuranceDeduction = insuranceDeduction * 12
   const totalDeduction = 5000 * 12
@@ -197,7 +237,7 @@ function calcTotal ({salary, bonus, specialDeduction, insuranceDeduction}) {
   return {tax, moneyGet}
 }
 
-function getTaxRateAndQuickDeduction (amount) {
+function getTaxRateAndQuickDeduction (amount, isBonus = false) {
   let taxRate = 0
   let quickDeduction = 0
   if (amount <= 0) {
@@ -223,5 +263,8 @@ function getTaxRateAndQuickDeduction (amount) {
     taxRate = 45
     quickDeduction = 181920
   }
-  return {taxRate, quickDeduction}
+  return {
+    taxRate,
+    quickDeduction: isBonus ? quickDeduction / 12 : quickDeduction
+  }
 }

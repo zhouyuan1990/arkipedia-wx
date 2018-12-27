@@ -1,6 +1,6 @@
 <template name='detailItem'>
   <view>
-    <text class='cal-detail-col cal-detail-col-0'>{{index + 1}}月</text>
+    <text class='cal-detail-col cal-detail-col-0'>{{name}}</text>
     <text class='cal-detail-col cal-detail-col-1'>{{taxPaid}}</text>
     <text class='cal-detail-col cal-detail-col-2'>{{moneyGet}}</text>
   </view>
@@ -8,55 +8,79 @@
 <view class='cal-container'>
   <form bindsubmit='quickFormSubmit' bindreset='quickFormReset'>
     <view class='cal-quick-form'>
-      <view>
-        <text class='cal-quick-form__field-name'>税前工资</text>
-        <input name='salary' type='digit' placeholder='输入每月应发工资' bindinput='onQuickSalaryInput' />
-      </view>
-      <view>
-        <text class='cal-quick-form__field-name'>社保汇缴基数</text>
-        <view class='cal-quick-form__field-content'>
-          <input name='sbBase' value='{{sbBase}}' type='digit' placeholder='社保汇缴基数' disabled='{{!customBase.sb}}' />
-          <checkbox-group bindchange='onCustomBaseChange' data-type='sb'>
-            <label class="checkbox">
-              <checkbox value="{{1}}" checked="{{customBase.sb}}" />
-              <text>自定义</text>
-            </label>
-          </checkbox-group>
+      <view class='cal-quick-form__main'>
+        <view class='cal-quick-form__salary'>
+          <text class='cal-quick-form__field-name'>税前工资（月薪）</text>
+          <input class='cal-quick-form__field-value' name='salary' type='digit' placeholder='输入每月应发工资' bindinput='onQuickSalaryInput' />
+        </view>
+        <view class='cal-quick-form__city'>
+          <text class='cal-quick-form__field-name'>城市</text>
+          <picker class='cal-quick-form__field-value' bindchange='onCityChange' value='{{cityIndex}}' range='{{cityList}}' range-key='chinese'>
+            <view>{{cityList[cityIndex].chinese}}</view>
+          </picker>
         </view>
       </view>
-      <view>
-        <text class='cal-quick-form__field-name'>公积金汇缴基数</text>
+      <block wx:if='{{cityItem}}'>
+        <view>
+          <text class='cal-quick-form__field-name'>社保汇缴基数</text>
+          <view class='cal-quick-form__field-content'>
+            <input class='cal-quick-form__field-value' name='sbBase' value='{{sbBase}}' type='digit' placeholder='社保汇缴基数' disabled='{{!customBase.sb}}' />
+            <checkbox-group class='cal-quick-form__field-value' bindchange='onCustomBaseChange' data-type='sb'>
+              <label class="checkbox">
+                <checkbox value="{{1}}" checked="{{customBase.sb}}" />
+                <text>自定义</text>
+              </label>
+            </checkbox-group>
+          </view>
+        </view>
+        <view>
+          <text class='cal-quick-form__field-name'>公积金汇缴基数</text>
+          <view class='cal-quick-form__field-content'>
+            <input class='cal-quick-form__field-value' name='gjjBase' value='{{gjjBase}}' type='digit' placeholder='公积金汇缴基数' disabled='{{!customBase.gjj}}' />
+            <checkbox-group class='cal-quick-form__field-value' bindchange='onCustomBaseChange' data-type='gjj'>
+              <label class="checkbox">
+                <checkbox value="{{1}}" checked="{{customBase.gjj}}" />
+                <text>自定义</text>
+              </label>
+            </checkbox-group>
+          </view>
+        </view>
+      </block>
+      <view wx:else>
+        <text class='cal-quick-form__field-name'>三险一金个人扣除</text>
         <view class='cal-quick-form__field-content'>
-          <input name='gjjBase' value='{{gjjBase}}' type='digit' placeholder='公积金汇缴基数' disabled='{{!customBase.gjj}}' />
-          <checkbox-group bindchange='onCustomBaseChange' data-type='gjj'>
-            <label class="checkbox">
-              <checkbox value="{{1}}" checked="{{customBase.gjj}}" />
-              <text>自定义</text>
-            </label>
-          </checkbox-group>
+          <input class='cal-quick-form__field-value' name='insuranceDeduction' type='digit' placeholder='输入三险一金个人扣除' />
         </view>
       </view>
       <view>
         <text class='cal-quick-form__field-name'>专项扣除</text>
         <view class='cal-quick-form__field-content'>
-          <input name='specialDeduction' type='digit' placeholder='输入每月专项扣除' />
+          <input class='cal-quick-form__field-value' name='specialDeduction' type='digit' placeholder='输入每月专项扣除' />
+        </view>
+      </view>
+      <view>
+        <text class='cal-quick-form__field-name'>时间</text>
+        <view class='cal-quick-form__field-content'>
+          <picker class='cal-quick-form__field-value' bindchange='onTimeChange' value='{{timeType}}' range='{{timeTypes}}'>
+            <view>{{timeTypes[timeType]}}</view>
+          </picker>
         </view>
       </view>
       <view class='cal-quick-form__bonus'>
         <view class='cal-quick-form__bonus-amount'>
           <text class='cal-quick-form__field-name'>年终奖</text>
-          <input class='cal-quick-form__field-content' name='bonus' type='digit' placeholder='年终奖金额' />
+          <input class='cal-quick-form__field-value' name='bonus' type='digit' placeholder='年终奖金额' />
         </view>
-        <view class='cal-quick-form__bonus-month'>
+        <view class='cal-quick-form__bonus-month' wx:if='{{timeType === 1}}'>
           <text class='cal-quick-form__field-name'>发放月份</text>
-          <picker class='cal-quick-form__field-content' name='bonusMonth' bindchange='onBonusMonthChange' value='{{bonusMonth}}' range='{{months}}'>
+          <picker class='cal-quick-form__field-value' name='bonusMonth' bindchange='onBonusMonthChange' value='{{bonusMonth}}' range='{{months}}'>
             <view>{{months[bonusMonth]}}</view>
           </picker>
         </view>
       </view>
     </view>
     <view class='cal-quick-form__buttons'>
-      <button form-type='submit' type='primary'>计算一下</button>
+      <button form-type='submit' disabled='{{salary <= 0}}' type='primary'>计算一下</button>
       <button form-type='reset'>重置</button>
     </view>
   </form>
