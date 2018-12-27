@@ -4,16 +4,14 @@ page {
 .cal-container {
   margin: 20rpx;
 }
+input[disabled] {
+  opacity: 0.3;
+  border-bottom: 1px dashed #999!important;
+  box-shadow: none!important;
+}
 .cal-quick-form {
-  display: table;
   font-size:32rpx;
   width:100%;
-}
-.cal-quick-form > view {
-  display: table-row;
-}
-.cal-quick-form > view > text {
-  display: table-cell;
 }
 .cal-detail {
   width: 100%;
@@ -41,15 +39,54 @@ page {
 .cal-detail-col {
   display: table-cell;
 }
-.cal-quick-form-buttons {
+.cal-quick-form > view {
+  margin: 20rpx 0;
+}
+.cal-quick-form input {
+  border-bottom: 1px solid #1AAD19;
+  box-shadow: 0 1px 0 0 #1AAD19;
+}
+.cal-quick-form__field-name {
+  display: block;
+  color: #999;
+}
+.cal-quick-form__field-content {
+  line-height: 2;
+  font-size: 36rpx;
+}
+.cal-quick-form__field-content > input {
+  max-width:50%;
+  margin-right:30rpx;
+}
+.cal-quick-form__field-content > text,
+.cal-quick-form__field-content > input,
+.cal-quick-form__field-content > checkbox-group,
+.cal-quick-form__field-content > picker {
+  display: inline-block;
+  vertical-align: middle;
+}
+.cal-quick-form__bonus-amount {
+  width: 50%;
+  margin-right: 30rpx;
+}
+.cal-quick-form__bonus > view {
+  display: inline-block;
+  vertical-align: top;
+}
+.cal-quick-form__bonus > view > text,
+.cal-quick-form__bonus > view > input,
+.cal-quick-form__bonus > view > picker {
+  display: block;
+}
+.cal-quick-form__buttons {
   margin-top: 30rpx;
 }
-.cal-quick-form-buttons button {
+.cal-quick-form__buttons button {
   display: inline-block;
   font-size: 34rpx;
   width: calc(50% - 10rpx);
   box-sizing: border-box;
 }
-.cal-quick-form-buttons button:first-child {
+.cal-quick-form__buttons button:first-child {
   margin-right: 14rpx;
 }

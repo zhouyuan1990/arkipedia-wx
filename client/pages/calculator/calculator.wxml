@@ -9,29 +9,53 @@
   <form bindsubmit='quickFormSubmit' bindreset='quickFormReset'>
     <view class='cal-quick-form'>
       <view>
-        <text>税前工资</text>
-        <input name='salary' type='digit' placeholder='输入每月应发工资' />
+        <text class='cal-quick-form__field-name'>税前工资</text>
+        <input name='salary' type='digit' placeholder='输入每月应发工资' bindinput='onQuickSalaryInput' />
       </view>
       <view>
-        <text>专项扣除</text>
-        <input name='specialDeduction' type='digit' placeholder='输入每月专项扣除' />
+        <text class='cal-quick-form__field-name'>社保汇缴基数</text>
+        <view class='cal-quick-form__field-content'>
+          <input name='sbBase' value='{{sbBase}}' type='digit' placeholder='社保汇缴基数' disabled='{{!customBase.sb}}' />
+          <checkbox-group bindchange='onCustomBaseChange' data-type='sb'>
+            <label class="checkbox">
+              <checkbox value="{{1}}" checked="{{customBase.sb}}" />
+              <text>自定义</text>
+            </label>
+          </checkbox-group>
+        </view>
       </view>
       <view>
-        <text>三险一金个人扣除</text>
-        <input name='insuranceDeduction' type='digit' placeholder='三险一金个人扣除(每月)' />
+        <text class='cal-quick-form__field-name'>公积金汇缴基数</text>
+        <view class='cal-quick-form__field-content'>
+          <input name='gjjBase' value='{{gjjBase}}' type='digit' placeholder='公积金汇缴基数' disabled='{{!customBase.gjj}}' />
+          <checkbox-group bindchange='onCustomBaseChange' data-type='gjj'>
+            <label class="checkbox">
+              <checkbox value="{{1}}" checked="{{customBase.gjj}}" />
+              <text>自定义</text>
+            </label>
+          </checkbox-group>
+        </view>
       </view>
       <view>
-        <text>年终奖</text>
-        <input name='bonus' type='digit' placeholder='年终奖' />
+        <text class='cal-quick-form__field-name'>专项扣除</text>
+        <view class='cal-quick-form__field-content'>
+          <input name='specialDeduction' type='digit' placeholder='输入每月专项扣除' />
+        </view>
       </view>
-      <view>
-        <text>年终奖发放月份</text>
-        <picker name='bonusMonth' bindchange='bindBonusMonthChange' value='{{bonusMonth}}' range='{{months}}'>
-          <view>{{months[bonusMonth]}}</view>
-        </picker>
+      <view class='cal-quick-form__bonus'>
+        <view class='cal-quick-form__bonus-amount'>
+          <text class='cal-quick-form__field-name'>年终奖</text>
+          <input class='cal-quick-form__field-content' name='bonus' type='digit' placeholder='年终奖金额' />
+        </view>
+        <view class='cal-quick-form__bonus-month'>
+          <text class='cal-quick-form__field-name'>发放月份</text>
+          <picker class='cal-quick-form__field-content' name='bonusMonth' bindchange='onBonusMonthChange' value='{{bonusMonth}}' range='{{months}}'>
+            <view>{{months[bonusMonth]}}</view>
+          </picker>
+        </view>
       </view>
     </view>
-    <view class='cal-quick-form-buttons'>
+    <view class='cal-quick-form__buttons'>
       <button form-type='submit' type='primary'>计算一下</button>
       <button form-type='reset'>重置</button>
     </view>
