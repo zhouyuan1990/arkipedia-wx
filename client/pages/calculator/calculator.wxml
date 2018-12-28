@@ -49,7 +49,7 @@
       <view wx:else>
         <text class='cal-quick-form__field-name'>三险一金个人扣除</text>
         <view class='cal-quick-form__field-content'>
-          <input class='cal-quick-form__field-value' name='insuranceDeduction' type='digit' placeholder='输入三险一金个人扣除' />
+          <input class='cal-quick-form__field-value' name='insuranceDeduction' type='digit' placeholder='三险一金个人扣除' />
         </view>
       </view>
       <view>
