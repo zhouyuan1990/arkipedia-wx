@@ -6,7 +6,7 @@ const months = Array(12).fill(null).map((item, index) => {
   return (index + 1) + '月'
 })
 const qqMapKey = 'F66BZ-FPXKO-5Y7WN-SIZBY-APOP6-QKB6P'
-const otherCity = { chinese: '其他城市', key: 'other'}
+const otherCity = { chinese: '其他城市', key: 'other', data: {} }
 Page({
   data: {
     cityList: cityData.map(item => { return { chinese: item.chinese } }).concat(otherCity),
@@ -39,12 +39,18 @@ Page({
             scope: 'scope.userLocation',
             success: () => {
               this.getCityAndInitData()
+            },
+            fail: res => {
+              console.log(res.errMsg)
+              this.changeAfterCityChange(-1)
             }
           })
+        } else {
+          this.getCityAndInitData()
         }
       }
     })
-    this.getCityAndInitData()
+    // this.getCityAndInitData()
   },
   getCityAndInitData: function () {
     wx.getLocation({
@@ -61,10 +67,10 @@ Page({
             this.changeAfterCityChange(cityIndex)
           },
           fail: res => {
-            console.log(res);
+            console.log(res)
+            this.changeAfterCityChange(-1)
           },
           complete: res => {
-            // console.log(res);
           }
       })
       }
@@ -72,9 +78,9 @@ Page({
   },
   changeAfterCityChange: function (index) {
     const cityItem = cityData[index] || null
-    const { sbBase, gjjBase } = cityItem ? getBase(this.data.salary, cityItem.data.base) : { sbBase: 0, gjjBase: 0}
+    const { sbBase, gjjBase } = getBase(this.data.salary, cityItem && cityItem.data.base)
     this.setData({
-      cityIndex: index,
+      cityIndex: index === -1 ? this.data.cityList.length - 1 : index,
       cityItem: cityItem,
       sbBase: sbBase,
       gjjBase: gjjBase
@@ -86,7 +92,7 @@ Page({
       salary: salary
     }
     const { customBase, cityItem } = this.data
-    const { gjjBase, sbBase } = getBase(salary, cityItem.data.base)
+    const { gjjBase, sbBase } = getBase(salary, cityItem && cityItem.data.base)
     if (!customBase.gjj) {
       updates.gjjBase = gjjBase
     }
@@ -106,7 +112,7 @@ Page({
     }
     if (!flag) {
       const { salary, cityItem } = this.data
-      const base = getBase(salary, cityItem.data.base)
+      const base = getBase(salary, cityItem && cityItem.data.base)
       const baseKey = `${type}Base`
       updates[baseKey] = base[baseKey]
     }
@@ -144,7 +150,6 @@ Page({
     }))
   },
   quickFormReset: function () {
-    console.log(this.data)
     this.setData({
       detail: [],
       taxTotal: 0,
@@ -154,10 +159,10 @@ Page({
 })
 
 function getBase(salary, base) {
-  return {
+  return base ? {
     gjjBase: salary < base.gjjBaseMin ? base.gjjBaseMin : salary > base.gjjBaseMax ? base.gjjBaseMax : salary,
     sbBase: salary < base.sbBaseMin ? base.sbBaseMin : salary > base.sbBaseMax ? base.sbBaseMax : salary
-  }
+  } : { gjjBase: 0, sbBase: 0 }
 }
 function getInsuranceDeduction ({gjjBase, sbBase, data, extraGjj = 0}) {
   const sbRate = Object.values(data.person.sb).reduce((sum, item) => sum + item) / 100
